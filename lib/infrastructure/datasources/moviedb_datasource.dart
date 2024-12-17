@@ -3,6 +3,7 @@ import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/config/constants/environment.dart';
 import 'package:cinemapedia/infrastructure/mappers/movie_mappers.dart';
 import 'package:cinemapedia/domain/datasources/movies_datasource.dart';
+import 'package:cinemapedia/infrastructure/models/moviedb/movie_detail.dart';
 import 'package:cinemapedia/infrastructure/models/moviedb/moviedb_responce.dart';
 
 class MoviedbDatasource extends MoviesDatasource {
@@ -35,7 +36,7 @@ class MoviedbDatasource extends MoviesDatasource {
       final response = await dio.get('/movie/now_playing' , queryParameters: { 'page': page });
       
       return _jsonToMovies(response.data);
-    } on DioException catch (e) {
+    } on DioException {
       
       return [];
     }
@@ -46,7 +47,7 @@ class MoviedbDatasource extends MoviesDatasource {
     try{
       final response = await dio.get('/movie/popular' , queryParameters: { 'page': page });
       return _jsonToMovies(response.data);
-    } on DioException catch (e) {
+    } on DioException {
       
      return [];
     }
@@ -57,7 +58,7 @@ class MoviedbDatasource extends MoviesDatasource {
     try{
       final response = await dio.get('/movie/top_rated' , queryParameters: { 'page': page });
       return _jsonToMovies(response.data);
-    } on DioException catch (e) {
+    } on DioException {
       
      return [];
     }
@@ -68,7 +69,48 @@ class MoviedbDatasource extends MoviesDatasource {
     try{
       final response = await dio.get('/movie/upcoming' , queryParameters: { 'page': page });
       return _jsonToMovies(response.data);
-    } on DioException catch (e) {
+    } on DioException {
+      
+     return [];
+    }
+  }
+  
+  @override
+  Future<Movie> getMovieById(String id) async{
+    try{
+      final response = await dio.get('/movie/$id');
+      final movdieDetails = MovieDetails.fromJson(response.data);
+      final Movie movie = MovieMappers.movieDetailsToEntity(movdieDetails);
+      //final Movie movie = MovieMapper
+      return movie;
+    } on DioException {
+      return Movie(
+        adult: false,
+        backdropPath: '',
+        genreIds: [],
+        id: 0,
+        originalLanguage: '',
+        originalTitle: '',
+        overview: '',
+        popularity: 0.0,
+        posterPath: '',
+        releaseDate: DateTime(1970, 1, 1),
+        title: '',
+        video: false,
+        voteAverage: 0.0,
+        voteCount: 0,
+      );
+    }
+  }
+  
+  @override
+  Future<List<Movie>> getSearchMovies(String query) async {
+    try{
+
+      if(query.isEmpty) return [];
+      final response = await dio.get('/search/movie' , queryParameters: { 'query': query });
+      return _jsonToMovies(response.data);
+    } on DioException {
       
      return [];
     }
