@@ -27,7 +27,6 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     isLoadingStream.add(true);
     if( _debonceTimer?.isActive ?? false) _debonceTimer!.cancel();
     _debonceTimer = Timer( const Duration(milliseconds: 300), () async {
-      //if(query.isEmpty) return debuncedMovies.add([]);
       final movies = await getSearchMovies(query);
       initialMovies = movies;
       debuncedMovies.add(movies);
@@ -148,11 +147,10 @@ class _MovieItem  extends StatelessWidget {
                   Text(movie.title, style: textStyles.titleMedium),
       
                   ( movie.overview.length > 100) ? Text('${movie.overview.substring(0, 100)}...') : Text(movie.overview ),
-      
+    
                   Row(
                     children: [
                       Icon( Icons.star_half_outlined, color: Colors.yellow.shade800),
-      
                       const SizedBox(width: 5),
                       Text( 
                         HumanFormats.number(movie.voteAverage , 1),
