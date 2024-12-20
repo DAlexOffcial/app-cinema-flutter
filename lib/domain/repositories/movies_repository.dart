@@ -1,4 +1,5 @@
 import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:cinemapedia/domain/entities/movie_videos.dart';
 
 abstract class MoviesRepository {
 
@@ -13,4 +14,6 @@ abstract class MoviesRepository {
   Future<Movie> getMovieById( String id );
 
   Future<List<Movie>> getSearchMovies( String query);
+  
+  Future<List<MovieVideos>> getListOfMovieVideos( String id);
 } 

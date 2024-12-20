@@ -9,7 +9,7 @@ final actorsByMovieProvider = StateNotifierProvider<ActorsByMovieNotifier, Map<S
 
 typedef GetActorsCallBack = Future<List<Actor>> Function(String movieId);
 
-class ActorsByMovieNotifier extends StateNotifier<Map<String, List<Actor >>> {
+class ActorsByMovieNotifier extends StateNotifier<Map<String, List<Actor>>> {
 
   final GetActorsCallBack getActors;
 

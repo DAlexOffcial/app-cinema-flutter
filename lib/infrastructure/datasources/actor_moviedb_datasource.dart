@@ -24,6 +24,7 @@ class ActorMoviedbDatasource extends ActorsDatasource {
       // el from json es cuando tienes la inforamcion aun en json y la convierte a data con el modelo que hice para poder trasformar el json a un tipo de data 
       final castRespoce = CreditsResponse.fromJson(response.data);
 
+
       List<Actor> actors = castRespoce.cast.map(
         (cast) => ActorMapper.caseToEntity(cast)
       ).toList();

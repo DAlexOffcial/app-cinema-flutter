@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/movies/movies_videos_provider.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
-
 
 
 class MovieScreen  extends ConsumerStatefulWidget {
@@ -26,6 +27,7 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
 
     ref.read(movieInfoProvider.notifier).loadMovie( widget.movieId );
     ref.read(actorsByMovieProvider.notifier).loadActors( widget.movieId );
+    ref.read(moviesVideoProvider.notifier).loadMovieVideos(widget.movieId);
     
   }
 
@@ -110,7 +112,11 @@ class _MovieDetails  extends StatelessWidget {
           ),
         ),
 
-        _ActorsByMovies( movieId:  movie.id.toString()),
+        _VideosByMovie(movieId: movie.id.toString()),
+        
+        const SizedBox(height: 10), 
+
+        _ActorsByMovies( movieId: movie.id.toString()),
         const SizedBox(height: 30), 
 
       ],
@@ -126,7 +132,7 @@ class _ActorsByMovies  extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context , ref) {
-
+ 
     final actorsByMovie = ref.watch( actorsByMovieProvider );
 
     if ( actorsByMovie[movieId] == null ) {
@@ -137,7 +143,7 @@ class _ActorsByMovies  extends ConsumerWidget {
 
     return SizedBox(
       height: 300,
-      child: ListView.builder(
+      child: actors.isEmpty ? const Center(child:  Text('Hubo un problema con los actores'),) : ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: actors.length,
         itemBuilder: (context, index) {
@@ -274,5 +280,86 @@ class _CustomGradient extends StatelessWidget {
                 )
               )),
             );
+  }
+}
+
+
+class _VideosByMovie extends ConsumerWidget {
+
+  final String movieId;
+  const _VideosByMovie({required this.movieId});
+
+  @override
+  Widget build(BuildContext context , ref) {
+
+    final textTheme = Theme.of(context).textTheme;
+
+    final movieVideos = ref.watch( moviesVideoProvider );
+  
+    if ( movieVideos[movieId] == null ) {
+      return const CircularProgressIndicator();
+    }
+
+    final videos = movieVideos[movieId]!;
+    
+
+    return videos.isEmpty ? const Center(child: Text('No hay trailers disponibles')) : Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(videos[0].name , style: textTheme.titleMedium )
+          ),
+         _VideoPlayer(videoKey: videos[0].key)
+
+        ],
+    );
+  
+  }
+}
+
+class _VideoPlayer extends StatefulWidget {
+  final String videoKey;
+  const _VideoPlayer({required this.videoKey});
+
+  @override
+  State<_VideoPlayer> createState() => _VideoPlayerState();
+}
+
+class _VideoPlayerState extends State<_VideoPlayer> {
+
+  late YoutubePlayerController _controller;
+  
+  @override
+  void initState() {
+    super.initState();
+    _controller = YoutubePlayerController(
+       params: const YoutubePlayerParams(
+        showControls: true,
+        showFullscreenButton: true,
+        loop: false,
+
+       )
+    );
+    _controller.loadVideoById(videoId: widget.videoKey);
+  }
+
+  @override
+  void dispose() {
+    _controller.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          YoutubePlayer(controller: _controller),
+        ],
+      ),
+    );
   }
 }

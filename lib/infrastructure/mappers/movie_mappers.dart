@@ -1,5 +1,7 @@
 import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:cinemapedia/domain/entities/movie_videos.dart';
 import 'package:cinemapedia/infrastructure/models/moviedb/movie_detail.dart';
+import 'package:cinemapedia/infrastructure/models/moviedb/movie_videos.dart';
 import 'package:cinemapedia/infrastructure/models/moviedb/movie_moviedb.dart';
 
 class MovieMappers {
@@ -35,5 +37,18 @@ class MovieMappers {
       video: moviedb.video,
       voteAverage: moviedb.voteAverage,
       voteCount: moviedb.voteCount
+  );
+
+  static MovieVideos movieVidosToEntity(MovieVideoResult movieResponce) => MovieVideos(
+    iso6391: movieResponce.iso6391, 
+    iso31661: movieResponce.iso31661, 
+    name: movieResponce.name, 
+    key: movieResponce.key != '' ? movieResponce.key : '', 
+    site: movieResponce.site, 
+    size: movieResponce.size, 
+    type: movieResponce.type, 
+    official: movieResponce.official, 
+    publishedAt: movieResponce.publishedAt, 
+    id: movieResponce.id
   );
 }

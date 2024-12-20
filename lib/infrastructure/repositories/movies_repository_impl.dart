@@ -1,4 +1,5 @@
 import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:cinemapedia/domain/entities/movie_videos.dart';
 import 'package:cinemapedia/domain/datasources/movies_datasource.dart';
 import 'package:cinemapedia/domain/repositories/movies_repository.dart';
 
@@ -9,7 +10,6 @@ class MoviesRepositoryImpl extends MoviesRepository {
   final MoviesDatasource dataSource ;
 
   MoviesRepositoryImpl(this.dataSource);
-
 
   @override
   Future<List<Movie>> getNowPlaying({int page = 1}) {
@@ -39,6 +39,11 @@ class MoviesRepositoryImpl extends MoviesRepository {
   @override
   Future<List<Movie>> getSearchMovies(String query) {
     return dataSource.getSearchMovies(query);
+  }
+
+  @override
+  Future<List<MovieVideos>> getListOfMovieVideos(String id) {
+    return dataSource.getListOfMovieVideos(id);
   }
 
 }

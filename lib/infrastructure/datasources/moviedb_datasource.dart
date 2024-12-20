@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:cinemapedia/domain/entities/movie_videos.dart';
 import 'package:cinemapedia/config/constants/environment.dart';
 import 'package:cinemapedia/infrastructure/mappers/movie_mappers.dart';
 import 'package:cinemapedia/domain/datasources/movies_datasource.dart';
+import 'package:cinemapedia/infrastructure/models/moviedb/movie_videos.dart';
 import 'package:cinemapedia/infrastructure/models/moviedb/movie_detail.dart';
 import 'package:cinemapedia/infrastructure/models/moviedb/moviedb_responce.dart';
 
@@ -79,6 +81,7 @@ class MoviedbDatasource extends MoviesDatasource {
   Future<Movie> getMovieById(String id) async{
     try{
       final response = await dio.get('/movie/$id');
+      print('consultado peliculas');
       final movdieDetails = MovieDetails.fromJson(response.data);
       final Movie movie = MovieMappers.movieDetailsToEntity(movdieDetails);
       //final Movie movie = MovieMapper
@@ -113,6 +116,20 @@ class MoviedbDatasource extends MoviesDatasource {
     } on DioException {
       
      return [];
+    }
+  }
+
+  @override
+  Future<List<MovieVideos>> getListOfMovieVideos(String id) async {
+    try {
+      final responce =  await dio.get('/movie/$id/videos');
+      final movieVideoResonce = MovieVideoResponce.fromJson(responce.data);
+      final movieVideo =  movieVideoResonce.results.map( (video) => MovieMappers.movieVidosToEntity(video)).toList();
+
+      return movieVideo;
+      
+    } on DioException {
+      return [];
     }
   }
 
